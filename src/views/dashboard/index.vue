@@ -1,16 +1,18 @@
 <template>
   <div class="dashboard-container">
     <div class="app-container">
-      <h2>
-        首页
-      </h2>
+      <ImageUpload :limit="limit" />
     </div>
   </div>
 </template>
 
 <script>
 export default {
-
+  data() {
+    return {
+      limit: 2
+    }
+  }
 }
 </script>
 

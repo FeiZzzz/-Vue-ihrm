@@ -8,7 +8,11 @@ export default {
     },
     {
       id: 2,
-      value: '非正式'
+      value: '试用'
+    },
+    {
+      id: 3,
+      value: '实习'
     }
   ],
   // 管理形式

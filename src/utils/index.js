@@ -136,7 +136,7 @@ export function param2Obj(url) {
 //   })
 //   return newArr
 // }
-
+// 转换树状数据的函数
 export function transListToTree(arr, data) {
   const newArr = []
   arr.forEach(item => {

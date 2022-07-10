@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 封装获取部门的函数
+// 封装获取组织架构部门的函数
 export const reqDepartMents = () => {
   return request({
     url: '/company/department'
