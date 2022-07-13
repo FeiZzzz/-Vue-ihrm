@@ -57,7 +57,7 @@
         <el-col :span="12">
           <el-form-item label="员工头像">
             <!-- 放置上传图片 -->
-
+            <ImageUpload ref="staffPhoto" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -89,6 +89,7 @@
 
         <el-form-item label="员工照片">
           <!-- 放置上传图片 -->
+          <ImageUpload ref="picPhoto" />
         </el-form-item>
         <el-form-item label="国家/地区">
           <el-select v-model="formData.nationalArea" class="inputW2">
@@ -284,6 +285,7 @@ import EmployeeEnum from '@/api/constant/employees'
 import { reqGetPersonalDetail, reqUpdatePersonal, reqGetUserDetailById, reqSaveUserDetailById } from '@/api/employees'
 
 export default {
+  name: 'UserInfo',
   data() {
     return {
       EmployeeEnum, // 员工枚举数据
@@ -372,20 +374,50 @@ export default {
   methods: {
     async getUserDetailById() {
       const { data } = await reqGetUserDetailById(this.userId)
+      this.$refs.staffPhoto.fileList = [{ url: data.staffPhoto }]
       this.userInfo = data
     },
     async saveUser() {
     //  调用父组件
-      await reqSaveUserDetailById(this.userInfo)
+      const files = this.$refs.staffPhoto.fileList
+      // 1.没有图片 提示消息 要上传一张照片 。否则 提示错误
+      if (files.length === 0) {
+        return this.$message.warning('请选择一张图片')
+      }
+
+      // 2.长传了但还没上传完毕
+      if (!this.$refs.staffPhoto.uploadAllSuccess) {
+        return this.$message.warning('请等待图片上传完毕')
+      }
+
+      // 去读取 员工上传的头像
+      const fileList = files[0] // 读取上传组件的数据
+      await reqSaveUserDetailById({ ...this.userInfo, staffPhoto: fileList.url })
       this.$message.success('保存成功')
     },
 
     async getPersonalDetail() {
       const { data } = await reqGetPersonalDetail(this.userId) // 获取员工数据
+      this.$refs.picPhoto.fileList = [{ url: data.staffPhoto }]
       this.formData = data
     },
     async savePersonal() {
-      await reqUpdatePersonal({ ...this.formData, userId: this.userId })
+      // await reqUpdatePersonal({ ...this.formData, userId: this.userId })
+      //  调用父组件
+      const files = this.$refs.picPhoto.fileList
+      // 1.没有图片 提示消息 要上传一张照片 。否则 提示错误
+      if (files.length === 0) {
+        return this.$message.warning('请选择一张图片')
+      }
+
+      // 2.长传了但还没上传完毕
+      if (!this.$refs.picPhoto.uploadAllSuccess) {
+        return this.$message.warning('请等待图片上传完毕')
+      }
+
+      // 去读取 员工上传的头像
+      const fileList = files[0] // 读取上传组件的数据
+      await reqUpdatePersonal({ ...this.formData, staffPhoto: fileList.url })
       this.$message.success('保存成功')
     }
   }

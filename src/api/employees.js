@@ -99,3 +99,11 @@ export function reqUpdateJob(data) {
     data
   })
 }
+// 给员工分配角色
+export const reqGetAssignRoles = (data) => {
+  return request({
+    method: 'put',
+    url: '/sys/user/assignRoles',
+    data
+  })
+}

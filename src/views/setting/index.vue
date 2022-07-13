@@ -20,7 +20,7 @@
               <el-table-column label="描述" prop="description" />
               <el-table-column label="操作">
                 <template v-slot="{row}">
-                  <el-button size="small" type="success">分配权限</el-button>
+                  <el-button size="small" type="success" @click="handlePermission(row.id)">分配权限</el-button>
                   <el-button size="small" type="primary" @click="editRole(row.id)">编辑</el-button>
                   <el-button size="small" type="danger" @click="delRole(row.id)">删除</el-button>
                 </template>
@@ -92,6 +92,20 @@
           <el-button type="primary" @click="submitBtn">确认</el-button>
         </template>
       </el-dialog>
+      <!-- 分配角色的弹框 -->
+      <el-dialog
+        :visible="handlePermissionShowDialog"
+        @close="PermissionHandleClose"
+        @open="PermissionHandleOpen"
+      >
+        <el-tree :data="permissionList" :props="{label:'name'}" show-checkbox check-strictly />
+        <template #footer>
+          <div style="text-align: right;">
+            <el-button @click="PermissionHandleClose">取消</el-button>
+            <el-button type="primary">确定</el-button>
+          </div>
+        </template>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -100,6 +114,8 @@
 import { mapState } from 'vuex'
 import { reqGetCompanyById } from '@/api/company'
 import { reqGetRoleList, reqDeleteRole, reqAddRole, reqUpdateRole, reqGetRoleDetail } from '@/api/setting'
+import { reqGetPermissionList } from '@/api/permission'
+import { transListToTree } from '@/utils'
 export default {
   name: 'Setting',
   data() {
@@ -120,7 +136,9 @@ export default {
         name: [{ required: true, message: '请输入角色名称', trigeer: ['blur', 'change'] }],
         description: [{ required: true, message: '请输入角色描述', trigeer: ['blur', 'change'] }]
       },
-      companyForm: {}
+      companyForm: {},
+      handlePermissionShowDialog: false,
+      permissionList: []
     }
   },
   // 控制显示标题的计算属性
@@ -224,6 +242,23 @@ export default {
     async getCompanyInfo() {
       const { data } = await reqGetCompanyById(this.userInfo.companyId)
       this.companyForm = data
+    },
+    // 分配角色权限
+    handlePermission(roleId) {
+      this.handlePermissionShowDialog = true
+      console.log(roleId)
+    },
+    // 关闭分配权限的弹框
+    PermissionHandleClose() {
+      this.handlePermissionShowDialog = false
+    },
+    // 获取角色权限
+    async getPermissionList() {
+      const { data } = await reqGetPermissionList()
+      this.permissionList = transListToTree(data, '0')
+    },
+    PermissionHandleOpen() {
+      this.getPermissionList()
     }
   }
 }

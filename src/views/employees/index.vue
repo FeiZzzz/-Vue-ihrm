@@ -19,6 +19,13 @@
         <el-table v-loading="loading" border :data="list">
           <el-table-column label="序号" sortable="" type="index" />
           <el-table-column label="姓名" sortable="" prop="username" />
+          <el-table-column label="头像" sortable="" prop="staffPhoto">
+            <template v-slot="{row}">
+
+              <img v-imgerror="defaultImg" :src="row.staffPhoto || defaultImg" class="staff" @click="clickShowCodeDialog(row.staffPhoto)">
+
+            </template>
+          </el-table-column>
           <el-table-column label="手机号" sortable="" prop="mobile" />
           <el-table-column label="工号" sortable="" prop="workNumber" />
           <el-table-column label="聘用形式" sortable="" prop="formOfEmployment" :formatter="formatEmployment" />
@@ -34,7 +41,7 @@
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
-              <el-button type="text" size="small">角色</el-button>
+              <el-button type="text" size="small" @click="assignRole(row.id)">角色</el-button>
               <el-button type="text" size="small" @click="delEmployee(row.id)">删除</el-button>
             </template>
           </el-table-column>
@@ -51,8 +58,17 @@
         </div>
       </el-card>
     </div>
-    <!-- 新增弹框的Dailong -->
-    <add-employee :show-dialog.sync="showDialog" />
+    <!-- 新增员工弹框的Dailong -->
+    <AddEmployee :show-dialog.sync="showDialog" />
+    <!-- 二维码弹出框 -->
+    <el-dialog title="二维码" :visible.sync="showCodeDialog" width="250px">
+      <el-row type="flex" justify="center">
+        <canvas ref="myCanvas" />
+      </el-row>
+
+    </el-dialog>
+    <!-- 角色分配弹出框 -->
+    <AssignRole :show-role-dialog.sync="showRoleDialog" :user-id="userId" />
   </div>
 </template>
 
@@ -61,11 +77,15 @@ import { reqGetEmployeeList, reqDelEmployee } from '@/api/employees'
 import EmployeeEnum from '@/api/constant/employees'
 import dayjs from 'dayjs'
 import AddEmployee from './components/add-employee.vue'
+import defaultImg from '@/assets/common/2.jpg'
+import QrCode from 'qrcode'
+import AssignRole from './components/assign-role.vue'
 
 export default {
   name: 'Employees',
   components: {
-    AddEmployee
+    AddEmployee,
+    AssignRole
   },
 
   data() {
@@ -75,7 +95,12 @@ export default {
       size: 10, // 每页条数
       total: 0, // 总条数
       loading: false, // 控制loading显示与隐藏
-      showDialog: false// 控制dialog显示隐藏
+      showDialog: false, // 控制dialog显示隐藏
+      defaultImg, // 默认图片
+      showCodeDialog: false, // 二维码弹出层
+      showRoleDialog: false, // 角色分配弹窗
+      userId: '' // 用户的id
+
     }
   },
   created() {
@@ -177,11 +202,34 @@ export default {
           bookType: 'xlsx' // 导出文件类型
         })
       })
+    },
+    // 二维码
+    clickShowCodeDialog(url) {
+      if (url === '') return
+      this.showCodeDialog = true
+      this.$nextTick(() => {
+        // 如果这里 url 写的是网址, 就会跳转到对应网址 (二维码分享效果)
+        QrCode.toCanvas(this.$refs.myCanvas, url)
+      })
+    },
+    // 分配角色
+    assignRole(userId) {
+      this.showRoleDialog = true
+      // console.log(row)
+      this.userId = userId
     }
   }
 }
 </script>
 
-<style>
+<style scoped lang="scss">
+.employees-container {
+  .staff {
+    width: 80px;
+    height: 80px;
+   vertical-align: middle;
+    border-radius: 50%;
 
+  }
+}
 </style>

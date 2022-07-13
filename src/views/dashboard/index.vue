@@ -1,16 +1,19 @@
 <template>
-  <div class="dashboard-container">
-    <div class="app-container">
-      <ImageUpload :limit="limit" />
-    </div>
+  <div>
+    <el-checkbox-group v-model="list">
+      <el-checkbox label="1" />
+      <el-checkbox label="2">曹</el-checkbox>
+      <el-checkbox label="3" />
+    </el-checkbox-group>
   </div>
 </template>
 
 <script>
 export default {
+  name: 'Dashboard',
   data() {
     return {
-      limit: 2
+      list: ['1']
     }
   }
 }

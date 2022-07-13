@@ -21,7 +21,7 @@ export function reqGetUserInfo(token) {
     url: '/sys/profile'
   })
 }
-// 获取用户基本信息 补全
+// 获取用户的全部信息 补全
 export function reqGetUserDetailById(id) {
   return request({
     url: `/sys/user/${id}`

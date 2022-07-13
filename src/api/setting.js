@@ -1,8 +1,9 @@
 import request from '@/utils/request'
 /**
  * 获取角色列表
+ * 设置默认值
  * ***/
-// 设置默认值
+
 export function reqGetRoleList(page = 1, pagesize = 10) {
   return request({
     method: 'get',
