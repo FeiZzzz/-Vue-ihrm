@@ -4,6 +4,8 @@ import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 // 导入 Element-UI 样式 和英文版
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+// 自定义主题
+import '@/styles/element-variables.scss'
 // import locale from 'element-ui/lib/locale/lang/en' // lang i18n
 // 导入全局css样式
 import '@/styles/index.scss' // global css
@@ -59,6 +61,12 @@ Object.keys(result).forEach(item => {
   Vue.directive(item, result[item])
 })
 
+import i18n from '@/lang'
+// 配置ElementUI的中英切换逻辑
+Vue.use(ElementUI, {
+  i18n: (key, value) => i18n.t(key, value)
+})
+
 // 全局注册组件
 import Components from '@/components'
 Vue.use(Components)
@@ -69,5 +77,6 @@ new Vue({
   el: '#app',
   router,
   store,
+  i18n,
   render: h => h(App)
 })

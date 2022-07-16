@@ -98,11 +98,18 @@
         @close="PermissionHandleClose"
         @open="PermissionHandleOpen"
       >
-        <el-tree :data="permissionList" :props="{label:'name'}" show-checkbox check-strictly />
+        <el-tree
+          ref="tree"
+          :data="permissionList"
+          :props="{label:'name'}"
+          show-checkbox
+          check-strictly
+          node-key="id"
+        />
         <template #footer>
           <div style="text-align: right;">
             <el-button @click="PermissionHandleClose">取消</el-button>
-            <el-button type="primary">确定</el-button>
+            <el-button type="primary" @click="clickAssign">确定</el-button>
           </div>
         </template>
       </el-dialog>
@@ -113,7 +120,7 @@
 <script>
 import { mapState } from 'vuex'
 import { reqGetCompanyById } from '@/api/company'
-import { reqGetRoleList, reqDeleteRole, reqAddRole, reqUpdateRole, reqGetRoleDetail } from '@/api/setting'
+import { reqGetRoleList, reqDeleteRole, reqAddRole, reqUpdateRole, reqGetRoleDetail, reqAssignPerm } from '@/api/setting'
 import { reqGetPermissionList } from '@/api/permission'
 import { transListToTree } from '@/utils'
 export default {
@@ -138,7 +145,8 @@ export default {
       },
       companyForm: {},
       handlePermissionShowDialog: false,
-      permissionList: []
+      permissionList: [],
+      roleId: '' // 点击当前分配角色的id
     }
   },
   // 控制显示标题的计算属性
@@ -246,20 +254,44 @@ export default {
     // 分配角色权限
     handlePermission(roleId) {
       this.handlePermissionShowDialog = true
-      console.log(roleId)
+      // console.log(roleId)
+      this.roleId = roleId
     },
+    /*
+    1.获取所有的权限列表数据
+    2.获取当前角色已有的数据（回显）
+    3.修改权限后重新设置
+
+    */
     // 关闭分配权限的弹框
     PermissionHandleClose() {
       this.handlePermissionShowDialog = false
+      // 清空复选框的选中状态
+      this.$refs.tree.setCheckedKeys([])
     },
-    // 获取角色权限
-    async getPermissionList() {
+    // 打开Dialog的时候
+    async PermissionHandleOpen() {
+      // 获取所有的角色权限
       const { data } = await reqGetPermissionList()
       this.permissionList = transListToTree(data, '0')
+
+      // 根据id获取当前角色权限  （用于数据回显）
+      const { data: { permIds }} = await reqGetRoleDetail(this.roleId)
+      // console.log(res)
+      this.$refs.tree.setCheckedKeys(permIds)
     },
-    PermissionHandleOpen() {
-      this.getPermissionList()
+    // 修改角色权限
+    async clickAssign() {
+      // 获取修改后的权限数组
+      const checkedKeys = this.$refs.tree.getCheckedKeys()
+      // 发送ajax 设置权限
+      await reqAssignPerm({ id: this.roleId, permIds: checkedKeys })
+      // 关闭弹窗
+      this.PermissionHandleClose()
+      // 成功提示
+      this.$message.success('分配角色权限成功')
     }
+
   }
 }
 </script>

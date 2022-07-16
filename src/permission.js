@@ -1,6 +1,7 @@
 // 路由前置守卫
 import router from '@/router'
 import store from '@/store'
+
 // 引入进度条组件
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
@@ -27,7 +28,22 @@ router.beforeEach(async(to, from, next) => {
       // 正常放行, 正常访问首页等内部页面, 需要获取用户信息
       // 如果当前vuex中已经有用户资料了, 就不需要再获取了 (没必要重复获取资料)
       if (!store.state.user.userInfo.userId) {
-        await store.dispatch('user/getUserInfo')
+        const res = await store.dispatch('user/getUserInfo')
+        // console.log(res)
+        const otherRoutes = await store.dispatch('permission/filterRoutes', res.roles.menus)
+        // console.log(otherRoutes)
+        // 1.登陆时，我们已经知道了用户有哪个标识
+        // 2.根据这些标识过滤动态路由 ["employees","settings","permissions"]
+        // 3.过滤动态路由再添加到路由规则中  router.addRoutes([路由对象])
+        router.addRoutes([
+          ...otherRoutes,
+          { path: '*', redirect: '/404', hidden: true }
+        ]) // 动态添加路由是异步的
+        next({ // 重新进入一次
+          ...to,
+          replace: true
+        })
+        // console.log(to)
       }
       next()
     }

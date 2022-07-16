@@ -1,5 +1,6 @@
 import { reqLogin, reqGetUserInfo, reqGetUserDetailById } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
+import { resetRouter } from '@/router'
 
 const state = () => {
   return {
@@ -49,8 +50,14 @@ const actions = {
   },
   // 退出
   logout(context) {
+    // 清空token
     context.commit('removeToken')
+    // 清空用户信息
     context.commit('removeUserInfo')
+    // 重置用户的路由规则
+    resetRouter()
+    // 重置权限模块中的routes
+    context.commit('permission/setRoutes', [], { root: true })
   }
 
 }

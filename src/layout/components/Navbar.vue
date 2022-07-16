@@ -2,12 +2,21 @@
   <div class="navbar">
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
     <div class="app-breadcrumb">
-      后台管理系统
-      <span class="breadBtn">体验版</span>
+      <!-- 后台管理系统 -->
+      {{ $t('navbar.title') }}
+      <span class="breadBtn">{{ $t('navbar.subTitle') }}</span>
     </div>
     <!-- <breadcrumb class="breadcrumb-container" /> -->
 
     <div class="right-menu">
+      <!-- 全屏组件 -->
+      <ScreenFull class="right-menu-item" />
+
+      <!-- 更换主题颜色插件 -->
+      <ThemePicker class="right-menu-item" style="padding-top:10px" />
+      <!-- 中英文切换组件 -->
+      <Lang class="right-menu-item" />
+
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img v-imgerror="img" :src="staffPhoto" class="user-avatar">
@@ -115,7 +124,7 @@ export default {
       height: 100%;
       font-size: 18px;
       color: #5a5e66;
-      vertical-align: text-bottom;
+      vertical-align: middle;
 
       &.hover-effect {
         cursor: pointer;

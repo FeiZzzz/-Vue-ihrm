@@ -37,12 +37,12 @@
           </el-table-column>
           <el-table-column label="操作" sortable="" fixed="right" width="280">
             <template v-slot="{row}">
-              <el-button type="text" size="small" @click="$router.push(`/employees/detail/${row.id}`)">查看</el-button>
+              <el-button v-if="checkPermission('look')" type="text" size="small" @click="$router.push(`/employees/detail/${row.id}`)">查看</el-button>
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
               <el-button type="text" size="small" @click="assignRole(row.id)">角色</el-button>
-              <el-button type="text" size="small" @click="delEmployee(row.id)">删除</el-button>
+              <el-button v-if="checkPermission('del')" type="text" size="small" @click="delEmployee(row.id)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -107,6 +107,10 @@ export default {
     this.getEmployeeList()
   },
   methods: {
+    checkPermission(type) {
+      const arr = this.$store.state.user.userInfo.roles.points
+      return arr.includes(type)
+    },
     async  getEmployeeList() {
       const { data } = await reqGetEmployeeList(this.page, this.size)
       this.total = data.total

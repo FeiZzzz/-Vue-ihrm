@@ -33,7 +33,7 @@ export const constantRoutes = [
     redirect: '/dashboard',
     children: [{
       path: 'dashboard',
-      name: 'Dashboard',
+      name: 'dashboard',
       component: () => import('@/views/dashboard/index'),
       meta: { title: '首页', icon: 'dashboard' }
     }]
@@ -49,9 +49,9 @@ export const constantRoutes = [
 
       }
     ]
-  },
+  }
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  // { path: '*', redirect: '/404', hidden: true }
 ]
 // 动态路由表 => 动态路由(需要权限才可以访问的) 我们这里准备一个数组存放
 export const asyncRoutes = [
@@ -68,7 +68,8 @@ export const asyncRoutes = [
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }), // 管理滚动行为, 让页面切换时回到顶部
-  routes: [...constantRoutes, ...asyncRoutes] // 临时合并动态路由和静态路由
+  // routes: [...constantRoutes, ...asyncRoutes] // 临时合并动态路由和静态路由
+  routes: [...constantRoutes]
 })
 
 const router = createRouter()
