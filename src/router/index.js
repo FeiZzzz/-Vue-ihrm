@@ -66,7 +66,7 @@ export const asyncRoutes = [
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
+  mode: 'history', // require service support // history 模式
   scrollBehavior: () => ({ y: 0 }), // 管理滚动行为, 让页面切换时回到顶部
   // routes: [...constantRoutes, ...asyncRoutes] // 临时合并动态路由和静态路由
   routes: [...constantRoutes]
